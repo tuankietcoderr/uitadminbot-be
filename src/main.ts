@@ -1,6 +1,6 @@
 import { HttpAdapterHost, NestFactory, Reflector } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { Logger, ValidationPipe, VersioningType } from '@nestjs/common';
+import { ValidationPipe, VersioningType } from '@nestjs/common';
 import * as session from 'express-session';
 import * as passport from 'passport';
 import { NestExpressApplication } from '@nestjs/platform-express';
@@ -9,13 +9,16 @@ import { ResponseInterceptor } from './shared/interceptors';
 import { SESSION_NAME } from './shared/constants';
 import { JwtAuthGuard } from './shared/guards';
 import { ConfigService } from '@nestjs/config';
+import { Logger } from 'nestjs-pino';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const MemoryStore = require('memorystore')(session);
 
 const signalsNames: NodeJS.Signals[] = ['SIGTERM', 'SIGINT', 'SIGHUP'];
 
 async function bootstrap() {
-  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
+    bufferLogs: true
+  });
   const reflector = app.get(Reflector);
   const configService = app.get(ConfigService);
 
@@ -49,7 +52,7 @@ async function bootstrap() {
   app.useGlobalInterceptors(new ResponseInterceptor(reflector));
   app.useGlobalGuards(new JwtAuthGuard(reflector));
 
-  const logger = new Logger('Bootstrap');
+  const logger = app.get(Logger);
 
   signalsNames.forEach((signalName) =>
     process.on(signalName, (signal) => {

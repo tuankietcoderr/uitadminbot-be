@@ -49,6 +49,7 @@ export class AuthController {
     return new SuccessResponse(user).setMessage('User fetched successfully');
   }
 
+  @Public()
   @Post('register-admin')
   async createAdmin(@Body() data: AdminRegisterDto) {
     return new SuccessResponse(await this.authService.createAdmin(data))

@@ -14,6 +14,7 @@ import { MongooseModelsModule } from './config/mongoose.module';
 import { MessageModule } from './message/message.module';
 import { SessionModule } from './session/session.module';
 import { UploadModule } from './upload/upload.module';
+import { LoggerModule } from './logger/logger.module';
 
 @Module({
   imports: [
@@ -31,7 +32,8 @@ import { UploadModule } from './upload/upload.module';
     AnalyticsModule,
     CloudinaryModule,
     UploadModule,
-    AssetModule
+    AssetModule,
+    LoggerModule
   ],
   controllers: [AppController]
 })

@@ -3,13 +3,14 @@ import { AppModule } from './app.module';
 import { Logger, ValidationPipe, VersioningType } from '@nestjs/common';
 import * as session from 'express-session';
 import * as passport from 'passport';
-import { join } from 'path';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { AllExceptionsFilter } from './shared/filters';
 import { ResponseInterceptor } from './shared/interceptors';
 import { SESSION_NAME } from './shared/constants';
 import { JwtAuthGuard } from './shared/guards';
 import { ConfigService } from '@nestjs/config';
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const MemoryStore = require('memorystore')(session);
 
 const signalsNames: NodeJS.Signals[] = ['SIGTERM', 'SIGINT', 'SIGHUP'];
 
@@ -32,7 +33,10 @@ async function bootstrap() {
       cookie: {
         secure: false,
         maxAge: 1000 * 60 * 60 * 24 // 24 hours
-      }
+      },
+      store: new MemoryStore({
+        checkPeriod: 86400000
+      })
     })
   );
 

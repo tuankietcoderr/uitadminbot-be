@@ -6,6 +6,7 @@ import * as Joi from 'joi';
   imports: [
     ConfigModule.forRoot({
       validationSchema: Joi.object({
+        CORS_ORIGIN: Joi.string().required(),
         SESSION_SECRET: Joi.string().required(),
         MESSAGE_SESSION_TIMEOUT: Joi.number().required(),
 

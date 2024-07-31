@@ -17,9 +17,10 @@ async function bootstrap() {
   });
   const reflector = app.get(Reflector);
   const configService = app.get(ConfigService);
+  const origin = configService.get<string>('CORS_ORIGIN');
 
   app.enableCors({
-    origin: ['http://localhost:3000'],
+    origin,
     credentials: true,
     preflightContinue: false,
     optionsSuccessStatus: 204

@@ -20,7 +20,7 @@ async function bootstrap() {
   const origin = configService.get<string>('CORS_ORIGIN');
 
   app.enableCors({
-    origin,
+    origin: origin.split(','),
     credentials: true,
     preflightContinue: false,
     optionsSuccessStatus: 204

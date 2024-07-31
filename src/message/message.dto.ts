@@ -6,6 +6,7 @@ class MessageContentValidator {
   @IsNotEmpty()
   content: string;
   contentType: EContentType;
+  extra?: Record<string, any>;
 }
 
 export class CreateMessageDto {

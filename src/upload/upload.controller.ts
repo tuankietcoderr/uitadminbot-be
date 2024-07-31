@@ -15,7 +15,6 @@ import { ErrorResponse, SuccessResponse } from 'src/shared/responses';
 import { AssetService } from 'src/asset/asset.service';
 import { CurrentUser } from 'src/shared/decorators';
 import { User } from 'src/shared/entities';
-import { UploadApiErrorResponse, UploadApiResponse } from 'cloudinary';
 import * as mime from 'mime-types';
 
 @Controller('upload')
@@ -40,7 +39,7 @@ export class UploadController {
       assetType: res.resource_type
     });
 
-    return new SuccessResponse(asset).setMessage('File uploaded successfully').setStatusCode(HttpStatus.CREATED);
+    return new SuccessResponse(asset).setMessage('Tải lên tệp tin thành công').setStatusCode(HttpStatus.CREATED);
   }
 
   @Delete()
@@ -53,7 +52,7 @@ export class UploadController {
           return new SuccessResponse(asset).setStatusCode(HttpStatus.NO_CONTENT);
         }
 
-        throw new BadRequestException('Resource deletion failed');
+        throw new BadRequestException('Lỗi xảy ra khi xóa tệp tin');
       })
       .catch((error) => {
         throw new BadRequestException(error.message);

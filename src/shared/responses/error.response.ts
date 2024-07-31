@@ -29,12 +29,17 @@ export class ErrorResponse<T> extends BaseResponse<T> {
   }
 
   public override toJSON() {
-    return {
+    const response = {
       ...super.toJSON(),
       stackTrace: this._stackTrace ?? null,
       exceptionName: this._exceptionName ?? null,
       success: false
     };
+
+    process.env.NODE_ENV === 'production' && delete response.stackTrace;
+    process.env.NODE_ENV === 'production' && delete response.exceptionName;
+
+    return response;
   }
 
   public override build(res: ErrorResponse<T>) {

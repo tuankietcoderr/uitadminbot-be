@@ -9,7 +9,7 @@ import { SessionSerializer } from './session.serializer';
 import { UserModule } from 'src/user/user.module';
 import { HashHelperService } from 'src/shared/helpers';
 import { AuthControllerV2 } from './auth.v2.controller';
-import { GoogleStrategy, JwtStrategy, LocalStrategy } from 'src/shared/strategies';
+import { JwtStrategy, LocalStrategy } from 'src/shared/strategies';
 
 @Module({
   imports: [
@@ -20,13 +20,11 @@ import { GoogleStrategy, JwtStrategy, LocalStrategy } from 'src/shared/strategie
       inject: [ConfigService],
       imports: [ConfigModule]
     }),
-    PassportModule.register({
-      session: true
-    }),
+    PassportModule.register({}),
     UserModule,
     CredentialModule
   ],
   controllers: [AuthController, AuthControllerV2],
-  providers: [AuthService, JwtStrategy, LocalStrategy, GoogleStrategy, SessionSerializer, HashHelperService]
+  providers: [AuthService, JwtStrategy, LocalStrategy, SessionSerializer, HashHelperService]
 })
 export class AuthModule {}

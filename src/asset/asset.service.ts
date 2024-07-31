@@ -14,7 +14,7 @@ export class AssetService {
   async delete(public_id: string) {
     const asset = await this.assetModel.findOneAndDelete({ publicId: public_id });
     if (!asset) {
-      throw new NotFoundException('Asset not found');
+      throw new NotFoundException('Không tìm thấy tệp tin');
     }
 
     return asset;

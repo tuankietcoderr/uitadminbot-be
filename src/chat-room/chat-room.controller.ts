@@ -9,10 +9,10 @@ import { CreateChatRoomDto } from './chat-room.dto';
 export class ChatRoomController {
   constructor(private readonly chatRoomService: ChatRoomService) {}
 
-  @Get('/user')
+  @Get('/chat-user')
   async getChatRoom(@CurrentUser() user: User) {
-    return new SuccessResponse(await this.chatRoomService.getUserChatRooms(user._id)).setMessage(
-      'Chat rooms fetched successfully'
+    return new SuccessResponse(await this.chatRoomService.getUserChatRoom(user._id.toString())).setMessage(
+      'Các phòng chat đã được tải'
     );
   }
 
@@ -22,40 +22,20 @@ export class ChatRoomController {
       creator: user._id,
       ...data
     });
-    return new SuccessResponse(chatRoom).setMessage('Chat room created successfully').setStatusCode(HttpStatus.CREATED);
+    return new SuccessResponse(chatRoom).setMessage('Phòng chat được tạo thành công').setStatusCode(HttpStatus.CREATED);
   }
 
   @Put(':roomId')
   async updateRoomTitle(@Param('roomId') roomId: string, @Body('title') title: string) {
     return new SuccessResponse(await this.chatRoomService.updateTitle(roomId, title)).setMessage(
-      'Chat room updated successfully'
+      'Thay đổi tiêu đề phòng chat thành công'
     );
   }
 
   @Get(':roomId')
-  async getRoomMessages(
-    @Param('roomId') roomId: string,
-    @Query(
-      'page',
-      new ParseIntPipe({
-        optional: true
-      })
-    )
-    page: number = 1,
-    @Query(
-      'limit',
-      new ParseIntPipe({
-        optional: true
-      })
-    )
-    limit: number = 10
-  ) {
+  async getRoomMessages(@Param('roomId') roomId: string) {
     const totalDocuments = await this.chatRoomService.countRoomMessages(roomId);
-    return new PaginateResponse(await this.chatRoomService.getRoomMessages(roomId, { page, limit }), {
-      limit,
-      page,
-      totalDocuments
-    }).setMessage('Chat room fetched successfully');
+    return new SuccessResponse(await this.chatRoomService.getRoomMessages(roomId)).setMessage('Danh sách tin nhắn');
   }
 
   @Delete(':roomId')

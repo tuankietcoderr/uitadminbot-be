@@ -11,10 +11,10 @@ import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { GlobalConfigModule } from './config/config.module';
 import { DatabaseModule } from './config/database.module';
 import { MongooseModelsModule } from './config/mongoose.module';
+import { LoggerModule } from './logger/logger.module';
 import { MessageModule } from './message/message.module';
 import { SessionModule } from './session/session.module';
 import { UploadModule } from './upload/upload.module';
-import { LoggerModule } from './logger/logger.module';
 
 @Module({
   imports: [

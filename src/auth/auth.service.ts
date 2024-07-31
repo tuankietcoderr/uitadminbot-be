@@ -1,13 +1,20 @@
-import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from 'src/user/user.service';
 import { CredentialService } from 'src/credential/credential.service';
 import { User } from 'src/shared/entities';
-import { IGoogleLoginResponse, ITokenPayload } from 'src/shared/interfaces';
+import { ITokenPayload } from 'src/shared/interfaces';
 import { HashHelperService } from 'src/shared/helpers';
 import { EAuthStrategy, ERole } from 'src/shared/enums';
 import { AdminRegisterDto, ChatUserRegisterDto, LoginDto } from './auth.dto';
+import * as moment from 'moment';
 
 @Injectable()
 export class AuthService {
@@ -19,7 +26,7 @@ export class AuthService {
     private readonly credentialService: CredentialService
   ) {}
 
-  async signJwtToken(user: User, accessTokenExpirationTime: string, refreshTokenExpirationTime: string) {
+  async signJwtToken(user: User, accessTokenExpirationTime: number, refreshTokenExpirationTime: number) {
     const payload: ITokenPayload = {
       userId: user._id.toString()
     };
@@ -31,18 +38,24 @@ export class AuthService {
       refreshToken: this.jwtService.sign(payload, {
         expiresIn: refreshTokenExpirationTime,
         secret: this.configService.get('JWT_SECRET')
-      })
+      }),
+      accessTokenExpiration: accessTokenExpirationTime,
+      refreshTokenExpiration: refreshTokenExpirationTime
     };
   }
 
   async signJwtTokenUser(user: User) {
-    const accessTokenExpirationTime = this.configService.get('JWT_ACCESS_TOKEN_EXPIRATION_TIME');
-    const refreshTokenExpirationTime = this.configService.get('JWT_REFRESH_TOKEN_EXPIRATION_TIME');
-    return this.signJwtToken(user, accessTokenExpirationTime, refreshTokenExpirationTime);
+    const accessTokenExpirationTime = this.configService.get<string>('JWT_ACCESS_TOKEN_EXPIRATION_TIME');
+    const refreshTokenExpirationTime = this.configService.get<string>('JWT_REFRESH_TOKEN_EXPIRATION_TIME');
+    return this.signJwtToken(
+      user,
+      this.timeStringToMilliseconds(accessTokenExpirationTime),
+      this.timeStringToMilliseconds(refreshTokenExpirationTime)
+    );
   }
 
   async signJwtTokenChatUser(user: User) {
-    return this.signJwtToken(user, '10y', '11y');
+    return this.signJwtToken(user, this.timeStringToMilliseconds('10y'), this.timeStringToMilliseconds('11y'));
   }
 
   async login(user: User) {
@@ -54,46 +67,20 @@ export class AuthService {
     };
   }
 
-  async googleLogin(user: IGoogleLoginResponse) {
-    const { email, name, isEmailVerified, picture } = user;
-    const existingUser = await this.userService.getUserByEmail(email);
-
-    if (existingUser) {
-      const res = await this.login(existingUser);
-      return {
-        isRegistered: true,
-        ...res
-      };
-    }
-
-    const newUser = await this.userService.newAdmin({
-      role: ERole.ADMIN,
-      email,
-      name,
-      avatar: picture,
-      isEmailVerified
-    });
-
-    return {
-      isRegistered: false,
-      user: newUser
-    };
-  }
-
   async createAdmin(data: AdminRegisterDto) {
     if (this.configService.get('AUTH_HEADER_ADMIN_SECRET') !== data.authKey) {
-      throw new BadRequestException('Invalid auth key');
+      throw new BadRequestException('Khoá xác thực không hợp lệ');
     }
     const { email, password } = data;
     const user = await this.userService.getUserByEmail(email);
 
     if (user) {
-      throw new ConflictException('User already exists');
+      throw new ConflictException('Email đã tồn tại');
     }
 
     const newUser = await this.userService.createAdmin({
       role: ERole.ADMIN,
-      authStrategy: EAuthStrategy.GOOGLE,
+      authStrategy: EAuthStrategy.LOCAL,
       ...data
     });
 
@@ -123,7 +110,9 @@ export class AuthService {
 
     return {
       ...tokens,
-      user: newUser
+      user: newUser,
+      accessTokenExpiration: this.timeStringToMilliseconds('10y'),
+      refreshTokenExpiration: this.timeStringToMilliseconds('11y')
     };
   }
 
@@ -139,18 +128,55 @@ export class AuthService {
     const isMatchPassword = await this.hashHelper.comparePassword(data.password, credential.password);
 
     if (!isMatchPassword) {
-      throw new BadRequestException('Wrong password');
+      throw new BadRequestException('Mật khẩu không chính xác');
     }
     return user;
   }
 
   async refreshToken(refreshToken: string) {
     const payload = this.jwtService.verify(refreshToken, {
-      secret: this.configService.get('JWT_SECRET')
+      secret: this.configService.get('JWT_SECRET'),
+      ignoreExpiration: true
     });
 
-    const user = await this.userService.getUser(payload.userId);
+    const { userId, iat, exp } = payload;
+    const expSecond = exp * 1000;
+
+    if (expSecond < Date.now()) {
+      throw new UnauthorizedException('Refresh token expired');
+    }
+
+    const user = await this.userService.getUser(userId);
 
     return this.signJwtTokenUser(user);
+  }
+
+  private timeStringToMilliseconds(timeString: string = '1d') {
+    const time = parseInt(timeString.slice(0, -1), 10);
+    const unit = timeString.slice(-1);
+
+    switch (unit) {
+      case 'y':
+      case 'Y':
+        return moment().add(time, 'years').valueOf();
+      case 'M':
+        return moment().add(time, 'months').valueOf();
+      case 'w':
+      case 'W':
+        return moment().add(time, 'weeks').valueOf();
+      case 'd':
+      case 'D':
+        return moment().add(time, 'days').valueOf();
+      case 'h':
+      case 'H':
+        return moment().add(time, 'hours').valueOf();
+      case 'm':
+        return moment().add(time, 'minutes').valueOf();
+      case 's':
+      case 'S':
+        return moment().add(time, 'seconds').valueOf();
+      default:
+        return moment().add(time, 'days').valueOf();
+    }
   }
 }

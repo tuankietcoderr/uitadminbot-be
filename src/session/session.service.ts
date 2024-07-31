@@ -18,7 +18,7 @@ export class SessionService {
   async findByIdOrThrow(sessionId: string) {
     const session = await this.findById(sessionId);
     if (!session) {
-      throw new NotFoundException('Session not found');
+      throw new NotFoundException('Không tìm thấy phiên làm việc');
     }
     return session;
   }
@@ -26,7 +26,7 @@ export class SessionService {
   async update(sessionId: string, data: Partial<Session>) {
     const session = await this.sessionModel.findByIdAndUpdate(sessionId, { $set: data }, { new: true });
     if (!session) {
-      throw new NotFoundException('Session not found');
+      throw new NotFoundException('Không tìm thấy phiên làm việc');
     }
     return session;
   }

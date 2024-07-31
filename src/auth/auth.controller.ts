@@ -5,6 +5,7 @@ import {
   Get,
   HttpStatus,
   InternalServerErrorException,
+  Param,
   Post,
   Req,
   Res,
@@ -12,11 +13,9 @@ import {
   Version
 } from '@nestjs/common';
 import { Request, Response } from 'express';
-import { SESSION_NAME } from 'src/shared/constants';
 import { CurrentUser, Public } from 'src/shared/decorators';
-import { User } from 'src/shared/entities';
-import { GoogleOAuthGuard, LocalAuthGuard } from 'src/shared/guards';
-import { IGoogleLoginResponse } from 'src/shared/interfaces';
+import { Admin, User } from 'src/shared/entities';
+import { LocalAuthGuard } from 'src/shared/guards';
 import { SuccessResponse } from 'src/shared/responses';
 import { AuthService } from './auth.service';
 import { AdminRegisterDto, ChatUserRegisterDto, RefreshTokenDto } from './auth.dto';
@@ -29,46 +28,35 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   @Post('login')
   async login(@CurrentUser() user: User) {
-    return new SuccessResponse(await this.authService.login(user)).setMessage('Logged in successfully');
-  }
-
-  @Public()
-  @UseGuards(GoogleOAuthGuard)
-  @Get('login/google')
-  async googleLogin(@CurrentUser() user: User) {}
-
-  @Public()
-  @UseGuards(GoogleOAuthGuard)
-  @Get('login/google/callback')
-  async googleLoginRedirect(@CurrentUser() user: IGoogleLoginResponse) {
-    return new SuccessResponse(await this.authService.googleLogin(user)).setMessage('Google logged in successfully');
+    return new SuccessResponse(await this.authService.login(user)).setMessage('Đăng nhập thành công');
   }
 
   @Get('me')
   async currentUser(@CurrentUser() user: User) {
-    return new SuccessResponse(user).setMessage('User fetched successfully');
+    return new SuccessResponse(user);
   }
 
   @Public()
-  @Post('register-admin')
+  @Post('register/admin')
   async createAdmin(@Body() data: AdminRegisterDto) {
     return new SuccessResponse(await this.authService.createAdmin(data))
-      .setMessage('Admin created successfully')
+      .setMessage('Admin được tạo thành công')
       .setStatusCode(HttpStatus.CREATED);
   }
 
   @Public()
-  @Post('register-chat-user')
+  @Post('register/chat-user')
   async createChatUser(@Body() data: ChatUserRegisterDto) {
     return new SuccessResponse(await this.authService.createChatUser(data))
-      .setMessage('Chat user created successfully')
+      .setMessage('Người dùng chat được tạo thành công')
       .setStatusCode(HttpStatus.CREATED);
   }
 
+  @Public()
   @Post('refresh-token')
   async refreshToken(@Body() data: RefreshTokenDto) {
     return new SuccessResponse(await this.authService.refreshToken(data.refreshToken)).setMessage(
-      'Token refreshed successfully'
+      'Token đã được cập nhật'
     );
   }
 
@@ -76,10 +64,10 @@ export class AuthController {
   async logout(@Req() req: Request, @Res() res: Response) {
     req.logout(function (err) {
       if (err) {
-        return res.send(new InternalServerErrorException(err.message));
+        return new InternalServerErrorException(err.message);
       }
     });
 
-    return res.clearCookie(SESSION_NAME).send(new SuccessResponse(null, 'Logged out successfully'));
+    return res.send(new SuccessResponse(true).setMessage('Đăng xuất thành công'));
   }
 }

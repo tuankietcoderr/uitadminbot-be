@@ -1,11 +1,14 @@
 import { Controller, Get, Param, ParseIntPipe, Query } from '@nestjs/common';
 import { AssetService } from './asset.service';
 import { PaginateResponse, SuccessResponse } from 'src/shared/responses';
+import { Roles } from 'src/shared/decorators';
+import { ERole } from 'src/shared/enums';
 
 @Controller('asset')
 export class AssetController {
   constructor(private readonly assetService: AssetService) {}
 
+  @Roles([ERole.ADMIN])
   @Get(':type')
   async getAssetsByType(
     @Param('type') type: string,

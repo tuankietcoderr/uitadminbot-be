@@ -19,9 +19,9 @@ export class ChatRoomService {
     return chatRoom;
   }
 
-  async getRoomMessages(roomId: string, { page = 1, limit = 10 }: IPaginationOptions) {
+  async getRoomMessages(roomId: string) {
     await this.findByIdOrThrow(roomId);
-    return await this.messageService.getRoomMessages(roomId, { page, limit });
+    return await this.messageService.getRoomMessages(roomId);
   }
 
   async countRoomMessages(roomId: string) {
@@ -30,14 +30,27 @@ export class ChatRoomService {
   }
 
   async getUserChatRooms(userId: string | Types.ObjectId) {
-    return await this.chatRoomModel.find({ creator: userId }).select('-creator').exec();
+    return await this.chatRoomModel.find({ creator: userId }).select('-creator');
+  }
+  async getUserChatRoom(userId: string) {
+    const lastRoom = await this.chatRoomModel
+      .findOne({ creator: userId })
+      .select('-creator')
+      .sort({ createdAt: -1 })
+      .limit(1);
+
+    if (!lastRoom) {
+      return await this.create({ creator: userId, title: 'Phòng chat mới' });
+    }
+
+    return lastRoom;
   }
 
   async updateTitle(_id: string, title: string) {
     const chatRoom = await this.chatRoomModel.findByIdAndUpdate(_id, { $set: { title } }, { new: true });
 
     if (!chatRoom) {
-      throw new NotFoundException('Chat room not found');
+      throw new NotFoundException('Phòng chat không tồn tại');
     }
 
     return chatRoom;
@@ -60,7 +73,7 @@ export class ChatRoomService {
   async findOneOrThrow(query: Partial<ChatRoom>) {
     const chatRoom = await this.findOne(query);
     if (!chatRoom) {
-      throw new NotFoundException('Chat room not found');
+      throw new NotFoundException('Phòng chat không tồn tại');
     }
     return chatRoom;
   }
@@ -68,7 +81,7 @@ export class ChatRoomService {
   async findByIdOrThrow(id: string) {
     const chatRoom = await this.findById(id);
     if (!chatRoom) {
-      throw new NotFoundException('Chat room not found');
+      throw new NotFoundException('Phòng chat không tồn tại');
     }
     return chatRoom;
   }

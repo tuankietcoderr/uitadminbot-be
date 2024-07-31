@@ -1,7 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectModel } from '@nestjs/mongoose';
+import { readFile, readFileSync } from 'fs';
 import { Model } from 'mongoose';
+import { join, resolve } from 'path';
 import { SessionService } from 'src/session/session.service';
 import { Message, MessageContent, MessageDocument } from 'src/shared/entities';
 import { EContentType } from 'src/shared/enums';
@@ -39,7 +41,7 @@ export class MessageService {
         });
 
         const newSession = await this.sessionService.create({
-          messages: [],
+          messages: [lastMessage._id],
           startTime: new Date(now),
           endTime: new Date(now)
         });
@@ -56,17 +58,16 @@ export class MessageService {
       sessionId = newSession._id;
     }
 
+    await this.sleep(5000);
+
     const message = new this.messageModel({ ...data, session: sessionId });
+
+    const fakeContent = readFileSync(join(resolve('./'), 'data', 'fake.md'), 'utf-8');
 
     //* FETCH ANSWER FROM AI SERVER
     const answer: MessageContent = {
-      content: 'This is an answer from the AI server',
-      contentType: EContentType.IMAGE,
-      extra: {
-        images: [
-          'https://yt3.googleusercontent.com/WoDkWmAjQ5Dbw-ccjqFku8ThK2UYcqaOqq25PBE9eGb_S-vsqxiKU2kL2kZJVz_BcAMv3WUWsA=s900-c-k-c0x00ffffff-no-rj'
-        ]
-      }
+      content: fakeContent,
+      contentType: EContentType.TEXT
     };
 
     message.answer = answer;
@@ -74,11 +75,8 @@ export class MessageService {
     return newMessage;
   }
 
-  async getRoomMessages(roomId: string, { page = 1, limit = 10 }: IPaginationOptions) {
-    return await this.messageModel
-      .find({ room: roomId })
-      .skip((page - 1) * limit)
-      .limit(limit);
+  async getRoomMessages(roomId: string) {
+    return await this.messageModel.find({ room: roomId });
   }
 
   async countRoomMessages(roomId: string) {
@@ -90,42 +88,40 @@ export class MessageService {
   }
 
   async likeMessage(messageId: string) {
-    const message = await this.messageModel.findByIdAndUpdate(
-      messageId,
-      {
-        $set: {
-          isLiked: true,
-          isDisliked: false
-        }
-      },
-      {
-        new: true
-      }
-    );
+    const message = await this.findByIdOrThrow(messageId);
+    const isMessageLiked = message.isLiked;
+    message.isDisliked = false;
+    message.isLiked = !isMessageLiked;
 
-    if (!message) {
-      throw new NotFoundException('Message not found');
-    }
+    await message.save();
 
     return message;
   }
 
   async dislikeMessage(messageId: string) {
-    const message = await this.messageModel.findByIdAndUpdate(
-      messageId,
-      {
-        $set: {
-          isLiked: false,
-          isDisliked: true
-        }
-      },
-      { new: true }
-    );
+    const message = await this.findByIdOrThrow(messageId);
+    const isMessageDisliked = message.isDisliked;
+    message.isLiked = false;
+    message.isDisliked = !isMessageDisliked;
 
+    await message.save();
+
+    return message;
+  }
+
+  async findAll() {
+    return await this.messageModel.find();
+  }
+
+  async findById(messageId: string) {
+    return await this.messageModel.findById(messageId);
+  }
+
+  async findByIdOrThrow(messageId: string) {
+    const message = await this.findById(messageId);
     if (!message) {
-      throw new NotFoundException('Message not found');
+      throw new NotFoundException('Không tìm thấy tin nhắn');
     }
-
     return message;
   }
 }

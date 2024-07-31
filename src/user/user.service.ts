@@ -20,7 +20,7 @@ export class UserService {
     const user = await this.userModel.findById(userId);
 
     if (!user) {
-      throw new NotFoundException(`User with _id ${userId} not found`);
+      throw new NotFoundException(`Không tìm thấy người dùng`);
     }
 
     return user;
@@ -30,7 +30,7 @@ export class UserService {
     const user = await this.getUserByEmail(email);
 
     if (!user) {
-      throw new NotFoundException(`User with email ${email} not found`);
+      throw new NotFoundException(`Không tìm thấy người dùng`);
     }
 
     return user;

@@ -15,4 +15,6 @@ export class CreateAssetDto {
   url: string;
   @IsNotEmpty()
   assetType: string;
+  @IsNotEmpty()
+  isAdminUpload: boolean;
 }

@@ -9,9 +9,10 @@ export class AssetController {
   constructor(private readonly assetService: AssetService) {}
 
   @Roles([ERole.ADMIN])
-  @Get(':type')
+  @Get()
   async getAssetsByType(
-    @Param('type') type: string,
+    @Query('type') type: string = 'pdf',
+    @Query('keyword') keyword: string = '',
     @Query(
       'page',
       new ParseIntPipe({
@@ -27,8 +28,8 @@ export class AssetController {
     )
     limit: number = 10
   ) {
-    const totalDocuments = await this.assetService.getAssetsCount(type);
-    return new PaginateResponse(await this.assetService.getAssetsByType(type, page, limit), {
+    const totalDocuments = await this.assetService.getAssetsCount(type, keyword);
+    return new PaginateResponse(await this.assetService.getAssetsByTypePaginate(type, keyword, page, limit), {
       page,
       limit,
       totalDocuments

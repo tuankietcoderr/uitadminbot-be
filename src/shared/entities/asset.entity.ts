@@ -29,6 +29,9 @@ export class Asset {
 
   @Prop({ required: true, index: true, type: MongooseSchema.Types.ObjectId, ref: ENTITY_NAME.USER })
   uploader: string | Types.ObjectId | Admin | ChatUser;
+
+  @Prop({ default: false })
+  isAdminUpload: boolean;
 }
 
 export const AssetSchema = SchemaFactory.createForClass(Asset);

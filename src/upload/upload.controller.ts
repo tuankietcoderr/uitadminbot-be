@@ -16,6 +16,7 @@ import { AssetService } from 'src/asset/asset.service';
 import { CurrentUser } from 'src/shared/decorators';
 import { User } from 'src/shared/entities';
 import * as mime from 'mime-types';
+import { ERole } from 'src/shared/enums';
 
 @Controller('upload')
 export class UploadController {
@@ -36,7 +37,8 @@ export class UploadController {
       originalFilename: res.original_filename,
       size: res.bytes,
       uploader: user._id.toString(),
-      assetType: res.resource_type
+      assetType: res.resource_type,
+      isAdminUpload: user.role === ERole.ADMIN
     });
 
     return new SuccessResponse(asset).setMessage('Tải lên tệp tin thành công').setStatusCode(HttpStatus.CREATED);
@@ -52,7 +54,7 @@ export class UploadController {
           return new SuccessResponse(asset).setStatusCode(HttpStatus.NO_CONTENT);
         }
 
-        throw new BadRequestException('Lỗi xảy ra khi xóa tệp tin');
+        throw new BadRequestException(`Lỗi xảy ra khi xóa tệp tin ${JSON.stringify(res)}`);
       })
       .catch((error) => {
         throw new BadRequestException(error.message);

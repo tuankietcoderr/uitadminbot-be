@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Get, HttpStatus, Param, Post, Put } from '@nestjs/common';
 import { MessageService } from './message.service';
 import { SuccessResponse } from 'src/shared/responses';
 import { CreateMessageDto } from './message.dto';
@@ -21,11 +21,13 @@ export class MessageController {
 
   @Put(':messageId/like')
   async likeMessage(@Param('messageId') messageId: string) {
-    return new SuccessResponse(await this.messageService.likeMessage(messageId));
+    return new SuccessResponse(await this.messageService.likeMessage(messageId)).setStatusCode(HttpStatus.NO_CONTENT);
   }
 
   @Put(':messageId/dislike')
   async dislikeMessage(@Param('messageId') messageId: string) {
-    return new SuccessResponse(await this.messageService.dislikeMessage(messageId));
+    return new SuccessResponse(await this.messageService.dislikeMessage(messageId)).setStatusCode(
+      HttpStatus.NO_CONTENT
+    );
   }
 }

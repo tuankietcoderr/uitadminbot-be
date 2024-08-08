@@ -7,5 +7,6 @@ export const ENTITY_NAME = {
   CHAT_MESSAGE: 'chat-messages',
   SESSION: 'message-sessions',
   ANALYTICS: 'analytics',
-  ASSET: 'assets'
+  ASSET: 'assets',
+  SHARE: 'shares'
 };

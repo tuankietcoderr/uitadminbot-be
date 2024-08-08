@@ -1,20 +1,24 @@
+import { HttpService } from '@nestjs/axios';
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectModel } from '@nestjs/mongoose';
 import { readFile, readFileSync } from 'fs';
 import { Model } from 'mongoose';
 import { join, resolve } from 'path';
+import { catchError, firstValueFrom, lastValueFrom } from 'rxjs';
 import { SessionService } from 'src/session/session.service';
 import { Message, MessageContent, MessageDocument } from 'src/shared/entities';
 import { EContentType } from 'src/shared/enums';
 import { IPaginationOptions } from 'src/shared/interfaces';
+import { AIChatResponseDto } from './message.dto';
 
 @Injectable()
 export class MessageService {
   constructor(
     @InjectModel(Message.name) private readonly messageModel: Model<MessageDocument>,
     private readonly sessionService: SessionService,
-    private readonly configService: ConfigService
+    private readonly configService: ConfigService,
+    private readonly httpService: HttpService
   ) {}
 
   async sleep(ms: number) {
@@ -58,19 +62,28 @@ export class MessageService {
       sessionId = newSession._id;
     }
 
-    await this.sleep(5000);
+    const res = await firstValueFrom(
+      this.httpService.post<AIChatResponseDto>('/chat/chatDomain', {
+        query: data.question.content
+      })
+    );
+
+    console.log(res);
+
+    if (res.status !== 200) {
+      throw new BadRequestException('Lỗi khi gửi yêu cầu tới server AI');
+    }
 
     const message = new this.messageModel({ ...data, session: sessionId });
 
-    const fakeContent = readFileSync(join(resolve('./'), 'data', 'fake.md'), 'utf-8');
-
     //* FETCH ANSWER FROM AI SERVER
     const answer: MessageContent = {
-      content: fakeContent,
+      content: res.data.response,
       contentType: EContentType.TEXT
     };
 
     message.answer = answer;
+    message.isOutDomain = res.data.is_outdomain;
     const newMessage = await message.save();
     return newMessage;
   }

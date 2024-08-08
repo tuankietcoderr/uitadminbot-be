@@ -7,6 +7,7 @@ import { MessageModule } from 'src/message/message.module';
 @Module({
   imports: [MessageModule],
   controllers: [ChatRoomController],
-  providers: [ChatRoomService]
+  providers: [ChatRoomService],
+  exports: [ChatRoomService]
 })
 export class ChatRoomModule {}

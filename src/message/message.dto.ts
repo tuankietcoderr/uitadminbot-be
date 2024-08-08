@@ -18,3 +18,12 @@ export class CreateMessageDto {
   @IsNotEmpty()
   room: string;
 }
+
+export class AIChatRequestDto {
+  query: string;
+}
+
+export class AIChatResponseDto {
+  response: string;
+  is_outdomain: boolean;
+}

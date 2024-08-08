@@ -20,7 +20,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
   async validate({ userId, iat, exp }: ITokenPayload) {
     const expSecond = exp * 1000;
-    console.log({ expSecond, now: Date.now(), diff: expSecond - Date.now() });
     if (expSecond < Date.now()) {
       throw new UnauthorizedException('Access token expired');
     }

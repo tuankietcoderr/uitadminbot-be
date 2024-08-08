@@ -15,6 +15,11 @@ import { LoggerModule } from './logger/logger.module';
 import { MessageModule } from './message/message.module';
 import { SessionModule } from './session/session.module';
 import { UploadModule } from './upload/upload.module';
+import { FileTrainingModule } from './file-training/file-training.module';
+import { HttpModule } from '@nestjs/axios';
+import { ConfigService } from '@nestjs/config';
+import { GlobalHttpModule } from './config/http.module';
+import { ShareModule } from './share/share.module';
 
 @Module({
   imports: [
@@ -22,6 +27,7 @@ import { UploadModule } from './upload/upload.module';
       storage: multer.memoryStorage()
     }),
     GlobalConfigModule,
+    GlobalHttpModule,
     ScheduleModule.forRoot(),
     AuthModule,
     DatabaseModule,
@@ -33,7 +39,9 @@ import { UploadModule } from './upload/upload.module';
     CloudinaryModule,
     UploadModule,
     AssetModule,
-    LoggerModule
+    LoggerModule,
+    FileTrainingModule,
+    ShareModule
   ],
   controllers: [AppController]
 })

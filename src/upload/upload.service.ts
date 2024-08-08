@@ -11,8 +11,8 @@ export class UploadService {
     });
   }
 
-  async deleteResource(public_id: string) {
-    return await this.cloudinaryService.deleteResource(public_id).catch((error) => {
+  async deleteResource(public_id: string, resource_type: string) {
+    return await this.cloudinaryService.deleteResource(public_id, resource_type).catch((error) => {
       throw new BadRequestException(error.message);
     });
   }

@@ -5,3 +5,4 @@ export * from './message.entity';
 export * from './room.entity';
 export * from './session.entity';
 export * from './asset.entity';
+export * from './share.entity';

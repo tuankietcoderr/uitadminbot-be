@@ -1,6 +1,7 @@
 import { ArgumentsHost, BadRequestException, Catch, ExceptionFilter, HttpException, HttpStatus } from '@nestjs/common';
 import { HttpAdapterHost } from '@nestjs/core';
 import { BaseResponse, ErrorResponse } from '../responses';
+import { AxiosError } from 'axios';
 
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {

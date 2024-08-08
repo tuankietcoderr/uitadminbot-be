@@ -17,6 +17,8 @@ import {
   MessageSchema,
   Session,
   SessionSchema,
+  Share,
+  ShareSchema,
   User,
   UserSchema
 } from 'src/shared/entities';
@@ -35,7 +37,8 @@ const MODELS: ModelDefinition[] = [
   { name: Message.name, schema: MessageSchema },
   { name: Session.name, schema: SessionSchema },
   { name: Analytics.name, schema: AnalyticsSchema },
-  { name: Asset.name, schema: AssetSchema }
+  { name: Asset.name, schema: AssetSchema },
+  { name: Share.name, schema: ShareSchema }
 ];
 
 @Global()

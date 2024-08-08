@@ -27,14 +27,18 @@ export class CloudinaryService {
     });
   }
 
-  async deleteResource(public_id: string): Promise<{
+  async deleteResource(
+    public_id: string,
+    resource_type: string
+  ): Promise<{
     result: string;
   }> {
     return new Promise((resolve, reject) => {
       v2.uploader.destroy(
         public_id,
         {
-          invalidate: true
+          invalidate: true,
+          resource_type
         },
         (error, result) => {
           if (error) return reject(error);

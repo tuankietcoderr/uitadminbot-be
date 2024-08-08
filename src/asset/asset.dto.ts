@@ -18,3 +18,12 @@ export class CreateAssetDto {
   @IsNotEmpty()
   isAdminUpload: boolean;
 }
+
+export class CreateLinkDto {
+  @IsNotEmpty()
+  link: string;
+  @IsNotEmpty()
+  uploader: string;
+  @IsNotEmpty()
+  isAdminUpload: boolean;
+}

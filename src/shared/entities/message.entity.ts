@@ -32,6 +32,9 @@ export class Message {
   @Prop({ default: false })
   isDisliked: boolean;
 
+  @Prop({ default: false })
+  isOutDomain: boolean;
+
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: ENTITY_NAME.SESSION })
   session: string | Types.ObjectId | Session;
 

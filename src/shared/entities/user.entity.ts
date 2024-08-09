@@ -34,6 +34,9 @@ export class Admin extends User {
 
   @Prop({ default: false })
   isEmailVerified?: boolean;
+
+  @Prop({ default: false })
+  isBanned?: boolean;
 }
 
 @Schema({ timestamps: true, collection: ENTITY_NAME.CHAT_USER, autoCreate: true })

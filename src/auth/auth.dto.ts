@@ -20,7 +20,9 @@ export class AdminRegisterDto {
   @IsNotEmpty()
   @MinLength(6)
   password: string;
+}
 
+export class SuperAdminRegisterDto extends AdminRegisterDto {
   @IsNotEmpty()
   authKey: string;
 }

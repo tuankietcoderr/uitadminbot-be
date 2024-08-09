@@ -29,10 +29,17 @@ export class AssetController {
     limit: number = 10
   ) {
     const totalDocuments = await this.assetService.getAssetsCount(type, keyword);
-    return new PaginateResponse(await this.assetService.getAssetsByTypePaginate(type, keyword, page, limit), {
-      page,
-      limit,
-      totalDocuments
-    }).setMessage('Assets fetched successfully');
+    return new PaginateResponse(
+      await this.assetService.getAssetsByTypePaginate(type, {
+        keyword,
+        limit,
+        page
+      }),
+      {
+        page,
+        limit,
+        totalDocuments
+      }
+    ).setMessage('Assets fetched successfully');
   }
 }

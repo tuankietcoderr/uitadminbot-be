@@ -7,18 +7,21 @@ import {
   InternalServerErrorException,
   Param,
   Post,
+  Put,
+  Query,
   Req,
   Res,
   UseGuards,
   Version
 } from '@nestjs/common';
 import { Request, Response } from 'express';
-import { CurrentUser, Public } from 'src/shared/decorators';
+import { CurrentUser, Public, Roles } from 'src/shared/decorators';
 import { Admin, User } from 'src/shared/entities';
 import { LocalAuthGuard } from 'src/shared/guards';
-import { SuccessResponse } from 'src/shared/responses';
+import { PaginateResponse, SuccessResponse } from 'src/shared/responses';
 import { AuthService } from './auth.service';
-import { AdminRegisterDto, ChatUserRegisterDto, RefreshTokenDto } from './auth.dto';
+import { AdminRegisterDto, ChatUserRegisterDto, RefreshTokenDto, SuperAdminRegisterDto } from './auth.dto';
+import { ERole } from 'src/shared/enums';
 
 @Controller('auth')
 export class AuthController {
@@ -37,11 +40,48 @@ export class AuthController {
   }
 
   @Public()
+  @Post('register/super-admin')
+  async createSuperAdmin(@Body() data: SuperAdminRegisterDto) {
+    return new SuccessResponse(await this.authService.createSuperAdmin(data))
+      .setMessage('Super Admin được tạo thành công')
+      .setStatusCode(HttpStatus.CREATED);
+  }
+
+  @Roles([ERole.SUPER_ADMIN])
   @Post('register/admin')
   async createAdmin(@Body() data: AdminRegisterDto) {
     return new SuccessResponse(await this.authService.createAdmin(data))
       .setMessage('Admin được tạo thành công')
       .setStatusCode(HttpStatus.CREATED);
+  }
+
+  @Roles([ERole.SUPER_ADMIN])
+  @Get('admin')
+  async getAdmins(
+    @Query('page') page: number = 1,
+    @Query('limit') limit: number = 10,
+    @Query('keyword') keyword: string = ''
+  ) {
+    const totalDocuments = await this.authService.countAdminList(keyword);
+    return new PaginateResponse(
+      await this.authService.getAdmins({
+        page,
+        limit,
+        keyword
+      }),
+      {
+        page,
+        limit,
+        totalDocuments
+      }
+    ).setMessage('Danh sách Admin');
+  }
+
+  @Roles([ERole.SUPER_ADMIN])
+  @Put('admin/:id')
+  async banAdmin(@Param('id') id: string) {
+    const res = await this.authService.banAdmin(id);
+    return new SuccessResponse(res).setMessage(`Admin đã ${res.isBanned ? 'bị cấm' : 'được phục hồi'}`);
   }
 
   @Public()

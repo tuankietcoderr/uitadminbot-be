@@ -3,6 +3,7 @@ import { CreateAssetDto, CreateLinkDto } from './asset.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Asset, AssetDocument, User } from 'src/shared/entities';
 import { Model } from 'mongoose';
+import { IDataFilter } from 'src/shared/interfaces';
 
 @Injectable()
 export class AssetService {
@@ -79,7 +80,7 @@ export class AssetService {
     );
   }
 
-  async getAssetsByTypePaginate(type: string, keyword: string, page: number = 1, limit: number = 10) {
+  async getAssetsByTypePaginate(type: string, { keyword, limit = 10, page = 1 }: IDataFilter) {
     return await this.getAssetByType(type, keyword)
       .skip((page - 1) * limit)
       .limit(limit)

@@ -2,7 +2,8 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Admin, AdminDocument, ChatUser, ChatUserDocument, User, UserDocument } from 'src/shared/entities';
-import { EAuthStrategy } from 'src/shared/enums';
+import { EAuthStrategy, ERole } from 'src/shared/enums';
+import { IDataFilter } from 'src/shared/interfaces';
 
 @Injectable()
 export class UserService {
@@ -62,5 +63,38 @@ export class UserService {
     const chatUser = await this.chatUserModel.create(data);
 
     return chatUser;
+  }
+
+  async countAdmins(keyword: string) {
+    return this.adminModel
+      .countDocuments({
+        $or: [{ email: { $regex: keyword, $options: 'i' } }, { name: { $regex: keyword, $options: 'i' } }]
+      })
+      .exec();
+  }
+
+  async getAdmins({ keyword = '', page = 1, limit = 10 }: IDataFilter) {
+    return this.adminModel
+      .find({
+        $or: [{ email: { $regex: keyword, $options: 'i' } }, { name: { $regex: keyword, $options: 'i' } }],
+        role: ERole.ADMIN
+      })
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .sort({ createdAt: -1 })
+      .exec();
+  }
+
+  async banAdmin(userId: string) {
+    const admin = await this.adminModel.findById(userId);
+
+    if (!admin) {
+      throw new NotFoundException('Không tìm thấy Admin');
+    }
+
+    admin.isBanned = !admin.isBanned;
+    await admin.save();
+
+    return admin;
   }
 }

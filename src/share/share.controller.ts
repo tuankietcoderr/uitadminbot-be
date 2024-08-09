@@ -47,7 +47,11 @@ export class ShareController {
     limit: number = 10
   ) {
     const totalDocuments = await this.shareService.countGetUserShares(user._id.toString(), keyword);
-    const shares = await this.shareService.getUserShares(user._id.toString(), page, limit, keyword);
+    const shares = await this.shareService.getUserShares(user._id.toString(), {
+      keyword,
+      limit,
+      page
+    });
     return new PaginateResponse(shares, {
       page,
       limit,

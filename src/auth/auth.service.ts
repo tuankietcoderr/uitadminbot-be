@@ -10,10 +10,10 @@ import { JwtService } from '@nestjs/jwt';
 import { UserService } from 'src/user/user.service';
 import { CredentialService } from 'src/credential/credential.service';
 import { User } from 'src/shared/entities';
-import { ITokenPayload } from 'src/shared/interfaces';
+import { IDataFilter, ITokenPayload } from 'src/shared/interfaces';
 import { HashHelperService } from 'src/shared/helpers';
 import { EAuthStrategy, ERole } from 'src/shared/enums';
-import { AdminRegisterDto, ChatUserRegisterDto, LoginDto } from './auth.dto';
+import { AdminRegisterDto, ChatUserRegisterDto, LoginDto, SuperAdminRegisterDto } from './auth.dto';
 import * as moment from 'moment';
 
 @Injectable()
@@ -67,10 +67,14 @@ export class AuthService {
     };
   }
 
-  async createAdmin(data: AdminRegisterDto) {
+  async createSuperAdmin(data: SuperAdminRegisterDto) {
     if (this.configService.get('AUTH_HEADER_ADMIN_SECRET') !== data.authKey) {
       throw new BadRequestException('Khoá xác thực không hợp lệ');
     }
+    return this.createAdmin(data, true);
+  }
+
+  async createAdmin(data: AdminRegisterDto, isSuperAdmin = false) {
     const { email, password } = data;
     const user = await this.userService.getUserByEmail(email);
 
@@ -79,7 +83,7 @@ export class AuthService {
     }
 
     const newUser = await this.userService.createAdmin({
-      role: ERole.ADMIN,
+      role: isSuperAdmin ? ERole.SUPER_ADMIN : ERole.ADMIN,
       authStrategy: EAuthStrategy.LOCAL,
       ...data
     });
@@ -149,6 +153,22 @@ export class AuthService {
     const user = await this.userService.getUser(userId);
 
     return this.signJwtTokenUser(user);
+  }
+
+  async countAdminList(keyword: string) {
+    return await this.userService.countAdmins(keyword);
+  }
+
+  async getAdmins({ keyword = '', page = 1, limit = 10 }: IDataFilter) {
+    return await this.userService.getAdmins({
+      keyword,
+      page,
+      limit
+    });
+  }
+
+  async banAdmin(userId: string) {
+    return await this.userService.banAdmin(userId);
   }
 
   private timeStringToMilliseconds(timeString: string = '1d') {

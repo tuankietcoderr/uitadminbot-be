@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { ChatRoomService } from 'src/chat-room/chat-room.service';
 import { Message, MessageDocument, Share, ShareDocument } from 'src/shared/entities';
+import { IDataFilter } from 'src/shared/interfaces';
 
 @Injectable()
 export class ShareService {
@@ -64,7 +65,7 @@ export class ShareService {
     return await this.shareModel.countDocuments({ owner }).exec();
   }
 
-  async getUserShares(owner: string, page: number = 1, limit: number = 10, keyword: string = '') {
+  async getUserShares(owner: string, { keyword = '', page = 1, limit = 10 }: IDataFilter) {
     return await this.shareModel
       .find({ owner })
       .skip((page - 1) * limit)

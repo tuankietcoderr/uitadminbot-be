@@ -17,7 +17,12 @@ export class RolesGuard implements CanActivate {
     if (!user) {
       return false;
     }
-    if (user.role === ERole.ADMIN) {
+
+    if (user.isBanned) {
+      return false;
+    }
+
+    if (user.role === ERole.SUPER_ADMIN) {
       return true;
     }
     return matchRoles(roles, user.role);

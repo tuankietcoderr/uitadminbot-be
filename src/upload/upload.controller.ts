@@ -40,7 +40,7 @@ export class UploadController {
       size: res.bytes,
       uploader: user._id.toString(),
       assetType: res.resource_type,
-      isAdminUpload: user.role === ERole.ADMIN
+      isAdminUpload: user.role !== ERole.CHAT_USER
     });
 
     return new SuccessResponse(asset).setMessage('Tải lên tệp tin thành công').setStatusCode(HttpStatus.CREATED);
@@ -59,7 +59,7 @@ export class UploadController {
     const asset = await this.assetService.createLink({
       link,
       uploader: user._id.toString(),
-      isAdminUpload: user.role === ERole.ADMIN
+      isAdminUpload: user.role !== ERole.CHAT_USER
     });
 
     await this.fileTrainingService
@@ -73,7 +73,7 @@ export class UploadController {
       ])
       .catch(async (error) => {
         await this.assetService.delete(asset.publicId);
-        return new ErrorResponse(error.message).setStatusCode(HttpStatus.BAD_REQUEST);
+        throw new BadRequestException(error.message);
       });
 
     return new SuccessResponse(asset).setMessage('Tải lên liên kết thành công').setStatusCode(HttpStatus.CREATED);
@@ -93,7 +93,7 @@ export class UploadController {
       size: res.bytes,
       uploader: user._id.toString(),
       assetType: res.resource_type,
-      isAdminUpload: user.role === ERole.ADMIN
+      isAdminUpload: user.role !== ERole.CHAT_USER
     });
 
     const pdfFormat = ['pdf'];
@@ -113,7 +113,7 @@ export class UploadController {
       ])
       .catch(async (error) => {
         await this.assetService.delete(res.public_id);
-        return new ErrorResponse(error.message).setStatusCode(HttpStatus.BAD_REQUEST);
+        throw new BadRequestException(error.message);
       });
 
     return new SuccessResponse(asset).setMessage('Tải lên tệp tin thành công').setStatusCode(HttpStatus.CREATED);

@@ -1,7 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ENTITY_NAME } from '../constants';
 import { Types, Schema as MongooseSchema, ObjectId, Document } from 'mongoose';
-import { ChatUser, User } from './user.entity';
 import { Message } from './message.entity';
 
 export type SessionDocument = Session & Document<ObjectId>;
@@ -24,7 +23,7 @@ export class Session {
     type: [
       {
         type: MongooseSchema.Types.ObjectId,
-        ref: ENTITY_NAME.CHAT_MESSAGE
+        ref: 'Message'
       }
     ]
   })

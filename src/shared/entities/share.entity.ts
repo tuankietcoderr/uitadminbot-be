@@ -10,7 +10,7 @@ export type ShareDocument = Share & Document<ObjectId>;
 export class Share {
   _id: Types.ObjectId;
 
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: ENTITY_NAME.USER, required: true })
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: User.name, required: true })
   owner: string | Types.ObjectId | User;
 
   @Prop({ default: new Date() })
@@ -27,7 +27,7 @@ export class Share {
     type: [
       {
         type: MongooseSchema.Types.ObjectId,
-        ref: ENTITY_NAME.CHAT_MESSAGE
+        ref: Message.name
       }
     ]
   })

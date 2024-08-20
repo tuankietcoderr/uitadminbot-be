@@ -7,10 +7,7 @@ import { IDataFilter } from 'src/shared/interfaces';
 
 @Injectable()
 export class AssetService {
-  constructor(
-    @InjectModel(Asset.name) private readonly assetModel: Model<AssetDocument>,
-    @InjectModel(User.name) private readonly userModel: Model<User>
-  ) {}
+  constructor(@InjectModel(Asset.name) private readonly assetModel: Model<AssetDocument>) {}
   async create(data: CreateAssetDto) {
     return await this.assetModel.create(data);
   }
@@ -73,7 +70,6 @@ export class AssetService {
       {
         populate: {
           path: 'uploader',
-          model: this.userModel,
           select: 'name'
         }
       }

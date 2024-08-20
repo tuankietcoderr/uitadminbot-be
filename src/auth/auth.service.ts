@@ -28,7 +28,8 @@ export class AuthService {
 
   async signJwtToken(user: User, accessTokenExpirationTime: number, refreshTokenExpirationTime: number) {
     const payload: ITokenPayload = {
-      userId: user._id.toString()
+      userId: user._id.toString(),
+      role: user.role
     };
     return {
       accessToken: this.jwtService.sign(payload, {

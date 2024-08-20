@@ -23,7 +23,7 @@ export class Message {
   @Prop({ type: MessageContent, default: null })
   answer: MessageContent | null;
 
-  @Prop({ required: true, index: true, type: MongooseSchema.Types.ObjectId, ref: ENTITY_NAME.CHAT_ROOM })
+  @Prop({ required: true, index: true, type: MongooseSchema.Types.ObjectId, ref: ChatRoom.name })
   room: string | Types.ObjectId | ChatRoom;
 
   @Prop({ default: false })
@@ -35,7 +35,7 @@ export class Message {
   @Prop({ default: false })
   isOutDomain: boolean;
 
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: ENTITY_NAME.SESSION })
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: Session.name })
   session: string | Types.ObjectId | Session;
 
   createdAt: Date;

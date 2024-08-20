@@ -20,6 +20,8 @@ import { HttpModule } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { GlobalHttpModule } from './config/http.module';
 import { ShareModule } from './share/share.module';
+import { SettingsModule } from './settings/settings.module';
+import { IntegrationModule } from './integration/integration.module';
 
 @Module({
   imports: [
@@ -41,7 +43,9 @@ import { ShareModule } from './share/share.module';
     AssetModule,
     LoggerModule,
     FileTrainingModule,
-    ShareModule
+    ShareModule,
+    SettingsModule,
+    IntegrationModule
   ],
   controllers: [AppController]
 })

@@ -6,6 +6,7 @@ import {
   HttpStatus,
   InternalServerErrorException,
   Param,
+  ParseIntPipe,
   Post,
   Put,
   Query,
@@ -58,8 +59,20 @@ export class AuthController {
   @Roles([ERole.SUPER_ADMIN])
   @Get('admin')
   async getAdmins(
-    @Query('page') page: number = 1,
-    @Query('limit') limit: number = 10,
+    @Query(
+      'page',
+      new ParseIntPipe({
+        optional: true
+      })
+    )
+    page: number = 1,
+    @Query(
+      'limit',
+      new ParseIntPipe({
+        optional: true
+      })
+    )
+    limit: number = 10,
     @Query('keyword') keyword: string = ''
   ) {
     const totalDocuments = await this.authService.countAdminList(keyword);

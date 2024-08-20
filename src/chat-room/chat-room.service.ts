@@ -86,10 +86,10 @@ export class ChatRoomService {
     return chatRoom;
   }
 
-  async deleteRoom(_id: string) {
-    const chatRoom = await this.findByIdOrThrow(_id);
+  async deleteRoom(userId: string) {
+    const chatRoom = await this.getUserChatRoom(userId);
 
-    await this.messageService.deleteRoomMessages(_id);
+    await this.messageService.deleteRoomMessages(chatRoom._id.toString());
 
     await chatRoom.deleteOne();
 

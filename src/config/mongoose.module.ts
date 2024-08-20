@@ -13,6 +13,8 @@ import {
   ChatUserSchema,
   Credential,
   CredentialSchema,
+  Integration,
+  IntegrationSchema,
   Message,
   MessageSchema,
   Session,
@@ -34,11 +36,12 @@ const MODELS: ModelDefinition[] = [
   },
   { name: Credential.name, schema: CredentialSchema },
   { name: ChatRoom.name, schema: ChatRoomSchema },
-  { name: Message.name, schema: MessageSchema },
   { name: Session.name, schema: SessionSchema },
+  { name: Message.name, schema: MessageSchema },
   { name: Analytics.name, schema: AnalyticsSchema },
   { name: Asset.name, schema: AssetSchema },
-  { name: Share.name, schema: ShareSchema }
+  { name: Share.name, schema: ShareSchema },
+  { name: Integration.name, schema: IntegrationSchema }
 ];
 
 @Global()

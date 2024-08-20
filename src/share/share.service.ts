@@ -30,8 +30,7 @@ export class ShareService {
       {},
       {
         populate: {
-          path: 'messages',
-          model: this.messageModel
+          path: 'messages'
         }
       }
     );

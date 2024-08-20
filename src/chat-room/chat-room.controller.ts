@@ -38,8 +38,10 @@ export class ChatRoomController {
     return new SuccessResponse(await this.chatRoomService.getRoomMessages(roomId)).setMessage('Danh sách tin nhắn');
   }
 
-  @Delete(':roomId')
-  async deleteRoom(@Param('roomId') roomId: string) {
-    return new SuccessResponse(await this.chatRoomService.deleteRoom(roomId)).setStatusCode(HttpStatus.NO_CONTENT);
+  @Delete()
+  async deleteRoom(@CurrentUser() user: User) {
+    return new SuccessResponse(await this.chatRoomService.deleteRoom(user._id.toString())).setStatusCode(
+      HttpStatus.NO_CONTENT
+    );
   }
 }

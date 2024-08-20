@@ -8,5 +8,6 @@ export const ENTITY_NAME = {
   SESSION: 'message-sessions',
   ANALYTICS: 'analytics',
   ASSET: 'assets',
-  SHARE: 'shares'
+  SHARE: 'shares',
+  INTEGRATION: 'integrations'
 };

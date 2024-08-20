@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ENTITY_NAME } from '../constants';
 import { Document, ObjectId, Schema as MongooseSchema, Types } from 'mongoose';
-import { ChatUser } from './user.entity';
+import { ChatUser, User } from './user.entity';
 
 export type ChatRoomDocument = ChatRoom & Document<ObjectId>;
 
@@ -11,7 +11,7 @@ export class ChatRoom {
   @Prop({ required: true })
   title: string;
 
-  @Prop({ required: true, index: true, type: MongooseSchema.Types.ObjectId, ref: ENTITY_NAME.USER })
+  @Prop({ required: true, index: true, type: MongooseSchema.Types.ObjectId, ref: User.name })
   creator: string | Types.ObjectId | ChatUser;
 }
 

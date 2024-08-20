@@ -25,6 +25,9 @@ export class AllExceptionsFilter implements ExceptionFilter {
     } else if (exception instanceof BaseResponse) {
       responseBody.setStatusCode(exception.statusCode);
       responseBody.setMessage(exception.message);
+    } else if (exception instanceof AggregateError) {
+      const errors = exception.errors.map((error) => error.message).join(', ');
+      responseBody.setMessage(errors);
     }
 
     responseBody.setStackTrace(exception.stack).setExceptionName(exception.name);

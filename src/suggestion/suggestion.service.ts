@@ -1,6 +1,6 @@
 import { HttpService } from '@nestjs/axios';
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { catchError, firstValueFrom, throwError } from 'rxjs';
+import { catchError, firstValueFrom } from 'rxjs';
 
 @Injectable()
 export class SuggestionService {
@@ -44,7 +44,7 @@ export class SuggestionService {
         })
         .pipe(
           catchError((err) => {
-            return throwError(() => new BadRequestException('Lỗi khi xóa dữ liệu'));
+            throw new BadRequestException('Lỗi khi xóa dữ liệu');
           })
         )
     );

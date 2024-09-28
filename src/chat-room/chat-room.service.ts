@@ -99,7 +99,7 @@ export class ChatRoomService {
         })
         .pipe(
           catchError((err) => {
-            return err;
+            throw new BadRequestException('Lỗi khi xóa phòng chat');
           })
         )
     );

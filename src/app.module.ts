@@ -22,6 +22,7 @@ import { GlobalHttpModule } from './config/http.module';
 import { ShareModule } from './share/share.module';
 import { SettingsModule } from './settings/settings.module';
 import { IntegrationModule } from './integration/integration.module';
+import { SuggestionModule } from './suggestion/suggestion.module';
 
 @Module({
   imports: [
@@ -45,7 +46,8 @@ import { IntegrationModule } from './integration/integration.module';
     FileTrainingModule,
     ShareModule,
     SettingsModule,
-    IntegrationModule
+    IntegrationModule,
+    SuggestionModule
   ],
   controllers: [AppController]
 })

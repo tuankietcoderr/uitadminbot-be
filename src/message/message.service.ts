@@ -63,16 +63,17 @@ export class MessageService {
     }
 
     const res = await firstValueFrom(
-      this.httpService.post<AIChatResponseDto>('/chat/chatDomain', {
-        query: data.question.content
-      })
+      this.httpService
+        .post<AIChatResponseDto>('/chat/chatDomain', {
+          query: data.question.content,
+          room_id: data.room
+        })
+        .pipe(
+          catchError((err) => {
+            throw new BadRequestException('Lỗi khi gửi yêu cầu tới server AI');
+          })
+        )
     );
-
-    console.log(res);
-
-    if (res.status !== 200) {
-      throw new BadRequestException('Lỗi khi gửi yêu cầu tới server AI');
-    }
 
     const message = new this.messageModel({ ...data, session: sessionId });
 

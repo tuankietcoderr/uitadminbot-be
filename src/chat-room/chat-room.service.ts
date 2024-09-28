@@ -1,6 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { HttpService } from '@nestjs/axios';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
+import { catchError, firstValueFrom } from 'rxjs';
 import { MessageService } from 'src/message/message.service';
 import { ChatRoom, ChatRoomDocument } from 'src/shared/entities';
 import { IPaginationOptions } from 'src/shared/interfaces';
@@ -11,7 +13,8 @@ export class ChatRoomService {
 
   constructor(
     @InjectModel(ChatRoom.name) private readonly chatRoomModel: Model<ChatRoomDocument>,
-    private readonly messageService: MessageService
+    private readonly messageService: MessageService,
+    private readonly httpService: HttpService
   ) {}
 
   async create(data: Partial<ChatRoom>) {
@@ -88,6 +91,18 @@ export class ChatRoomService {
 
   async deleteRoom(userId: string) {
     const chatRoom = await this.getUserChatRoom(userId);
+
+    await firstValueFrom(
+      this.httpService
+        .delete('/chat/deleteChat', {
+          params: { room_id: chatRoom.id }
+        })
+        .pipe(
+          catchError((err) => {
+            return err;
+          })
+        )
+    );
 
     await this.messageService.deleteRoomMessages(chatRoom._id.toString());
 

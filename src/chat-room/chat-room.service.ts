@@ -93,16 +93,10 @@ export class ChatRoomService {
     const chatRoom = await this.getUserChatRoom(userId);
 
     await firstValueFrom(
-      this.httpService
-        .delete('/chat/deleteChat', {
-          params: { room_id: chatRoom.id }
-        })
-        .pipe(
-          catchError((err) => {
-            throw new BadRequestException('Lỗi khi xóa phòng chat');
-          })
-        )
-    );
+      this.httpService.delete('/chat/deleteChat', {
+        params: { room_id: chatRoom.id }
+      })
+    ).catch(console.log);
 
     await this.messageService.deleteRoomMessages(chatRoom._id.toString());
 

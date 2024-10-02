@@ -21,8 +21,8 @@ export class FailedResponseCause {
 export class Analytics {
   _id: string;
 
-  @Prop({ required: true, index: true, type: Date, default: new Date() })
-  date: Date;
+  @Prop({ required: true, index: true, type: Date, default: new Date().toDateString() })
+  date: string;
 
   @Prop({ default: 0 })
   totalMessages: number;
@@ -68,6 +68,9 @@ export class Analytics {
 
   @Prop({ default: 0 })
   activeUsers: number;
+
+  @Prop({ default: 0 })
+  totalSessions: number;
 
   @Prop({ type: [FailedResponseCause], default: [] })
   failedResponseCauses: FailedResponseCause[];

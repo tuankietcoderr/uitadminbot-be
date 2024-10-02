@@ -23,6 +23,9 @@ export class Message {
   @Prop({ type: MessageContent, default: null })
   answer: MessageContent | null;
 
+  @Prop({ default: 0 })
+  responseTime: number;
+
   @Prop({ required: true, index: true, type: MongooseSchema.Types.ObjectId, ref: ChatRoom.name })
   room: string | Types.ObjectId | ChatRoom;
 

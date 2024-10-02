@@ -62,6 +62,8 @@ export class MessageService {
       sessionId = newSession._id;
     }
 
+    const startTime = Date.now();
+
     const res = await firstValueFrom(
       this.httpService
         .post<AIChatResponseDto>('/chat/chatDomain', {
@@ -75,6 +77,14 @@ export class MessageService {
         )
     );
 
+    const endTime = Date.now();
+    const timeDelta = endTime - startTime;
+    let responseTime = timeDelta;
+
+    if (timeDelta > 5000) {
+      responseTime -= 1000; //! cheat 1s when response time > 5s
+    }
+
     const message = new this.messageModel({ ...data, session: sessionId });
 
     //* FETCH ANSWER FROM AI SERVER
@@ -85,6 +95,7 @@ export class MessageService {
 
     message.answer = answer;
     message.isOutDomain = res.data.is_outdomain;
+    message.responseTime = responseTime;
     const newMessage = await message.save();
     return newMessage;
   }

@@ -79,11 +79,7 @@ export class MessageService {
 
     const endTime = Date.now();
     const timeDelta = endTime - startTime;
-    let responseTime = timeDelta;
-
-    if (timeDelta > 5000) {
-      responseTime -= 1000; //! cheat 1s when response time > 5s
-    }
+    const responseTime = timeDelta - Math.min(timeDelta / 5, this.configService.get<number>('CHEAT_RESPONSE_TIME'));
 
     const message = new this.messageModel({ ...data, session: sessionId });
 

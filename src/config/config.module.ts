@@ -19,7 +19,8 @@ import * as Joi from 'joi';
 
         CLOUDINARY_CLOUD_NAME: Joi.string().required(),
         CLOUDINARY_API_KEY: Joi.string().required(),
-        CLOUDINARY_API_SECRET: Joi.string().required()
+        CLOUDINARY_API_SECRET: Joi.string().required(),
+        CHEAT_RESPONSE_TIME: Joi.number().required()
       }),
       isGlobal: true
     })

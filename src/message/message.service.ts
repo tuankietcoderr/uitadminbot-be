@@ -72,6 +72,7 @@ export class MessageService {
         })
         .pipe(
           catchError((err) => {
+            console.log('AI SERVER ERROR: ', err);
             throw new BadRequestException('Lỗi khi gửi yêu cầu tới server AI');
           })
         )

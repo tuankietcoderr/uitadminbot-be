@@ -102,8 +102,8 @@ export class ChatRoomService {
 
     await chatRoom.deleteOne();
 
-    await this.create({ creator: userId, title: 'Phòng chat mới' });
+    const newRoom = await this.create({ creator: userId, title: 'Phòng chat mới' });
 
-    return chatRoom;
+    return newRoom;
   }
 }

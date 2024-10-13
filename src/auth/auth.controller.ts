@@ -40,7 +40,7 @@ export class AuthController {
     const userChatRoom = await this.authService.getChatUserRoom(user._id.toString());
     return new SuccessResponse({
       ...user,
-      chatRoom: userChatRoom.id
+      room: userChatRoom.id
     });
   }
 

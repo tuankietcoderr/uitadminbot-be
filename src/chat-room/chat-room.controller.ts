@@ -40,8 +40,6 @@ export class ChatRoomController {
 
   @Delete()
   async deleteRoom(@CurrentUser() user: User) {
-    return new SuccessResponse(await this.chatRoomService.deleteRoom(user._id.toString())).setStatusCode(
-      HttpStatus.NO_CONTENT
-    );
+    return new SuccessResponse(await this.chatRoomService.deleteRoom(user._id.toString())).setStatusCode(HttpStatus.OK);
   }
 }

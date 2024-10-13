@@ -114,12 +114,14 @@ export class AuthService {
     });
 
     const tokens = await this.signJwtTokenChatUser(newUser);
+    const room = await this.roomService.getUserChatRoom(newUser._id.toString());
 
     return {
       ...tokens,
       user: newUser,
       accessTokenExpiration: this.timeStringToMilliseconds('10y'),
-      refreshTokenExpiration: this.timeStringToMilliseconds('11y')
+      refreshTokenExpiration: this.timeStringToMilliseconds('11y'),
+      room: room.id
     };
   }
 

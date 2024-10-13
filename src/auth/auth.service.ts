@@ -15,11 +15,13 @@ import { HashHelperService } from 'src/shared/helpers';
 import { EAuthStrategy, ERole } from 'src/shared/enums';
 import { AdminRegisterDto, ChatUserRegisterDto, LoginDto, SuperAdminRegisterDto } from './auth.dto';
 import * as moment from 'moment';
+import { ChatRoomService } from 'src/chat-room/chat-room.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly userService: UserService,
+    private readonly roomService: ChatRoomService,
     private readonly hashHelper: HashHelperService,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
@@ -199,5 +201,9 @@ export class AuthService {
       default:
         return moment().add(time, 'days').valueOf();
     }
+  }
+
+  async getChatUserRoom(userId: string) {
+    return await this.roomService.getUserChatRoom(userId);
   }
 }

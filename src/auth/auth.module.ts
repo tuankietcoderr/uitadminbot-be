@@ -10,6 +10,8 @@ import { UserModule } from 'src/user/user.module';
 import { HashHelperService } from 'src/shared/helpers';
 import { AuthControllerV2 } from './auth.v2.controller';
 import { JwtStrategy, LocalStrategy } from 'src/shared/strategies';
+import { ChatRoomService } from 'src/chat-room/chat-room.service';
+import { ChatRoomModule } from 'src/chat-room/chat-room.module';
 
 @Module({
   imports: [
@@ -22,7 +24,8 @@ import { JwtStrategy, LocalStrategy } from 'src/shared/strategies';
     }),
     PassportModule.register({}),
     UserModule,
-    CredentialModule
+    CredentialModule,
+    ChatRoomModule
   ],
   controllers: [AuthController, AuthControllerV2],
   providers: [AuthService, JwtStrategy, LocalStrategy, SessionSerializer, HashHelperService]

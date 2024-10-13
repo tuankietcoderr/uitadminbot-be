@@ -24,12 +24,8 @@ export class Share {
 
   @Prop({
     required: true,
-    type: [
-      {
-        type: MongooseSchema.Types.ObjectId,
-        ref: Message.name
-      }
-    ]
+    type: [Message],
+    default: []
   })
   messages: Message[];
 }

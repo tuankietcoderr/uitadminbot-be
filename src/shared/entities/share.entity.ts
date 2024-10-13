@@ -31,7 +31,7 @@ export class Share {
       }
     ]
   })
-  messages: string[] | Types.ObjectId[] | Message[];
+  messages: Message[];
 }
 
 export const ShareSchema = SchemaFactory.createForClass(Share);

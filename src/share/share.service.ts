@@ -16,24 +16,15 @@ export class ShareService {
   async create(owner: string) {
     const room = await this.roomService.getUserChatRoom(owner);
     const messages = await this.roomService.getRoomMessages(room._id.toString());
-    const messageIds = messages.map((message) => message._id.toString());
     return await this.shareModel.create({
-      messages: messageIds,
+      messages,
       owner,
       expiredAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // 7 days
     });
   }
 
   async getShareById(_id: string) {
-    return await this.shareModel.findById(
-      _id,
-      {},
-      {
-        populate: {
-          path: 'messages'
-        }
-      }
-    );
+    return await this.shareModel.findById(_id, {});
   }
 
   async getShareByIdOrThrow(_id: string) {
@@ -66,7 +57,7 @@ export class ShareService {
 
   async getUserShares(owner: string, { keyword = '', page = 1, limit = 10 }: IDataFilter) {
     return await this.shareModel
-      .find({ owner })
+      .find({ owner }, { messages: 0 })
       .skip((page - 1) * limit)
       .limit(limit)
       .sort({ createdAt: -1 });

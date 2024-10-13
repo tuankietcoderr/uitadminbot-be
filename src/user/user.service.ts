@@ -24,7 +24,7 @@ export class UserService {
       throw new NotFoundException(`Không tìm thấy người dùng`);
     }
 
-    return user;
+    return user.toJSON();
   }
 
   async getUserByEmailOrThrow(email: string) {

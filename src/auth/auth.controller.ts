@@ -38,10 +38,8 @@ export class AuthController {
   @Get('me')
   async currentUser(@CurrentUser() user: User) {
     const userChatRoom = await this.authService.getChatUserRoom(user._id.toString());
-    return new SuccessResponse({
-      ...user,
-      room: userChatRoom.id
-    });
+    console.log({ ...user, room: userChatRoom.id });
+    return new SuccessResponse(user);
   }
 
   @Public()

@@ -8,7 +8,7 @@ import { ConfigService } from '@nestjs/config';
     HttpModule.registerAsync({
       useFactory: (configService: ConfigService) => ({
         baseURL: configService.get<string>('AI_HOST'),
-        timeout: 90000,
+        timeout: 120000, // 2 minutes
         withCredentials: true
       }),
       inject: [ConfigService]

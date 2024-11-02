@@ -20,7 +20,8 @@ import * as Joi from 'joi';
         CLOUDINARY_CLOUD_NAME: Joi.string().required(),
         CLOUDINARY_API_KEY: Joi.string().required(),
         CLOUDINARY_API_SECRET: Joi.string().required(),
-        CHEAT_RESPONSE_TIME: Joi.number().required()
+        CHEAT_RESPONSE_TIME: Joi.number().required(),
+        HTTP_TIMEOUT: Joi.number().default(300000) // 5 minutes
       }),
       isGlobal: true
     })

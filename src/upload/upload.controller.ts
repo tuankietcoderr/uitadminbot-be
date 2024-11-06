@@ -73,7 +73,7 @@ export class UploadController {
       ])
       .catch(async (error) => {
         await this.assetService.delete(asset.publicId);
-        throw new BadRequestException(error.message);
+        return new ErrorResponse(error.message).setStatusCode(HttpStatus.BAD_REQUEST);
       });
 
     return new SuccessResponse(asset).setMessage('Tải lên liên kết thành công').setStatusCode(HttpStatus.CREATED);
@@ -113,7 +113,7 @@ export class UploadController {
       ])
       .catch(async (error) => {
         await this.assetService.delete(res.public_id);
-        throw new BadRequestException(error.message);
+        return new ErrorResponse(error.message).setStatusCode(HttpStatus.BAD_REQUEST);
       });
 
     return new SuccessResponse(asset).setMessage('Tải lên tệp tin thành công').setStatusCode(HttpStatus.CREATED);
@@ -124,28 +124,38 @@ export class UploadController {
   async deleteTrain(@Query('public_id') public_id: string) {
     const asset = await this.assetService.getAssetByPublicIdOrThrow(public_id);
 
-    return await this.uploadService.deleteResource(public_id, asset.assetType).then(async (res) => {
-      if (res.result === 'ok') {
-        const asset = await this.assetService.delete(public_id);
-        await this.fileTrainingService.deleteFile(public_id).catch(async (error) => {
-          console.log(error.message);
-        });
-        return new SuccessResponse(asset).setStatusCode(HttpStatus.NO_CONTENT);
-      }
+    return await this.uploadService
+      .deleteResource(public_id, asset.assetType)
+      .then(async (res) => {
+        if (res.result === 'ok') {
+          const asset = await this.assetService.delete(public_id);
+          await this.fileTrainingService.deleteFile(public_id).catch(async (error) => {
+            console.log(error.message);
+          });
+          return new SuccessResponse(asset).setStatusCode(HttpStatus.NO_CONTENT);
+        }
 
-      return new ErrorResponse('Lỗi xảy ra khi xóa tệp tin').setStatusCode(HttpStatus.BAD_REQUEST);
-    });
+        return new ErrorResponse('Lỗi xảy ra khi xóa tệp tin').setStatusCode(HttpStatus.BAD_REQUEST);
+      })
+      .catch((error) => {
+        return new ErrorResponse(error.message).setStatusCode(HttpStatus.BAD_REQUEST);
+      });
   }
 
   @Roles([ERole.ADMIN])
   @Delete('/link')
   async deleteLink(@Query('public_id') public_id: string) {
-    return await this.assetService.delete(public_id).then(async (res) => {
-      await this.fileTrainingService.deleteFile(public_id).catch(async (error) => {
-        console.log(error.message);
+    return await this.assetService
+      .delete(public_id)
+      .then(async (res) => {
+        await this.fileTrainingService.deleteFile(public_id).catch(async (error) => {
+          console.log(error.message);
+        });
+        return new SuccessResponse(res).setStatusCode(HttpStatus.NO_CONTENT);
+      })
+      .catch((error) => {
+        return new ErrorResponse(error.message).setStatusCode(HttpStatus.BAD_REQUEST);
       });
-      return new SuccessResponse(res).setStatusCode(HttpStatus.NO_CONTENT);
-    });
   }
 
   @Delete()
